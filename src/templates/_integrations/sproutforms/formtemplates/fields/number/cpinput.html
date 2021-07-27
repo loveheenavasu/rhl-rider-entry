@@ -1,0 +1,45 @@
+{% import "_includes/forms" as forms %}
+{# {{ dump(value) }}
+{% exit %} #}
+{% set value = value|json_decode %}
+
+{{ forms.select({
+    name: field.handle~"[]",
+    options: options,
+    value: value[0],
+    readonly: false,
+    disabled: false,
+    id: "id-"~field.handle
+}) }}
+
+{{ forms.select({
+    name: field.handle~"[]",
+    options: options2,
+    value: value[1],
+    readonly: false,
+    disabled: false,
+    id: "id-"~field.handle~"-child"
+}) }}
+
+{% js %}
+    var ele = document.getElementById("fields-id-{{field.handle}}");
+    if(ele){
+        ele.addEventListener('change', function() {
+            var arr = this.value.split('-');
+            if( arr.length > 1 ){
+                var start = parseInt(arr[0]);
+                var end = parseInt(arr[1]);
+                var options = [];
+
+                var select = document.getElementById("fields-id-{{ field.handle }}-child");
+                length = select.options.length;
+                while(length--){
+                    select.remove(length);
+                }
+                for (var i = start; i <= end; i++) {
+                    select.options[select.options.length] = new Option(i, i);
+                }
+            }
+        });
+    }
+{% endjs %}

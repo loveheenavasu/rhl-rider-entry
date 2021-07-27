@@ -1,0 +1,118 @@
+{%- set id = renderingOptions.id ?? name %}
+{%- set class = renderingOptions.class ?? name %}
+{%- set required = field.required ? true : false %}
+{%- set hasInstructions = field.instructions ? true : false %}
+{%- set value = value ? value : null %}
+{%- set errors = entry is not empty ? entry.getErrors(name) : null %}
+{%- set errorClass = renderingOptions.errorClass ?? null %}
+{%- set class = errors and errorClass ? class~' '~errorClass : class %}
+
+{%- set dataAttributes = null %}
+{%- set data = renderingOptions.data ?? null %}
+{%- for key, dataValue in data %}
+    {%- set dataAttributes = dataAttributes ~ ' data-'~key~'="'~dataValue~'"' %}
+{%- endfor -%}
+
+
+{# Get the requested URI #}
+{% set requestedUri = craft.app.request.getPathInfo() %}
+
+{# Fetch the entry with that URI #}
+{% set event = craft.entries()
+    .section('events')
+    .uri(requestedUri|literal)
+    .one() %}
+
+{% set riderNumbers = craft.entries()
+    .section('riderNumbers')
+    .eventslist(event)
+    .all() %}
+
+{% set numbersArr = [] %}
+
+{% for riderNumber in riderNumbers %}
+    {% set numbersArr = numbersArr|merge([riderNumber.reservedNumber]) %}
+{% endfor %}
+
+{% spaceless %}
+    <select
+        {%- if name %} name="{{ name }}[]"{% endif %}
+        {%- if id %} id="{{ id }}"{% endif %}
+        {%- if class %} class="{{ class }}"{% endif %}
+        {%- if required %} required aria-required="true"{% endif %}
+        {%- if hasInstructions %} aria-describedby="{{ field.getNamespace() }}-{{ id }}-instructions"{% endif %}
+        {{- dataAttributes|raw -}}
+    >
+    <option value="">Select...</option>
+        {%- for key, option in options -%}
+
+            {%- set optionLabel = option -%}
+            {%- set optionValue = key -%}
+
+            <option value="{{ optionValue }}" {% if optionValue == value %}selected{% endif %}>
+                {{ optionLabel }}
+            </option>
+        {% endfor %}
+    </select>
+{% endspaceless %}
+
+{% spaceless %}
+    <input type="hidden" id="unavailableRiderNumber" value="{{ numbersArr|json_encode() }}">
+    <div id="{{ id }}-div-child" style="display: none;">
+        <div class="heading">
+            <label for="fields-riderNumber1">{{ secondInputTitle }}</label>
+        </div>
+        <select
+            {%- if name %} name="{{ name }}[]"{% endif %}
+            {%- if id %} id="{{ id }}-child"{% endif %}
+            {%- if class %} class="{{ class }}-child"{% endif %}
+            {%- if required %} required aria-required="true"{% endif %}
+            {%- if hasInstructions %} aria-describedby="{{ field.getNamespace() }}-{{ id }}-instructions-child"{% endif %}
+            {{- dataAttributes|raw -}}
+        >
+        </select>
+    </div>
+
+    {% js %}
+        var ele = document.getElementById('fields-{{ id }}');
+        if(ele){
+            ele.addEventListener('change', function() {
+                var arr = this.value.split('-');
+                if( arr.length > 1 ){
+                    var start = parseInt(arr[0]);
+                    var end = parseInt(arr[1]);
+                    var options = [];
+
+                    var select = document.getElementById('fields-{{ id }}-child');
+                    var div = document.getElementById('fields-{{ id }}-div-child');
+                    div.style.display = "block";
+                    length = select.options.length;
+                    while(length--){
+                        select.remove(length);
+                    }
+
+                    var child = document.getElementById('fields-{{ id }}-child');
+
+                    var numbers = document.getElementById("fields-unavailableRiderNumber").value;
+                    var option = document.createElement("option");
+                    option.text = "Select Number";
+                    option.value = "";
+                    child.appendChild(option);
+
+                    numbers = JSON.parse(numbers);
+                    for (var i = start; i <= end; i++) {
+                        var option = document.createElement("option");
+                        if( numbers.indexOf(i) == -1 ){
+                            option.text = i;
+                        }else{
+                            option.text = `${i} (Occupied)`;
+                            option.disabled = "disabled";
+                        }
+                        option.value = i;
+                        child.appendChild(option);
+                    }
+                }
+            });
+        }
+    {% endjs %}
+{% endspaceless %}

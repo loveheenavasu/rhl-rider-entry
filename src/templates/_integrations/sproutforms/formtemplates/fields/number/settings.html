@@ -1,0 +1,46 @@
+{% import "_includes/forms" as forms %}
+
+{# {{ forms.selectField({
+    label: "Default State"|t,
+    instructions: "The State that should be selected by default.",
+    id: 'defaultState',
+    name: 'defaultState',
+    options: options,
+    value: field.defaultState
+}) }} #}
+
+{{ forms.textField({
+    label: "Start Number"|t('sprout-forms'),
+    id: 'start',
+    name: 'start',
+    value: field.start,
+    size: 5,
+    errors: field.getErrors('start')
+}) }}
+
+{{ forms.textField({
+    label: "End Number"|t('sprout-forms'),
+    id: 'end',
+    name: 'end',
+    value: field.end,
+    size: 5,
+    errors: field.getErrors('end')
+}) }}
+
+{{ forms.textField({
+    label: "Range"|t('sprout-forms'),
+    id: 'range',
+    name: 'range',
+    value: field.range,
+    size: 5,
+    errors: field.getErrors('range')
+}) }}
+
+
+{{ forms.textField({
+    label: "Title Text"|t('sprout-forms-range-slider'),
+    instructions: "The text that will be used as the number range input title attribute."|t('sprout-forms-range-slider'),
+    id: 'secondInputTitle',
+    name: 'secondInputTitle',
+    value: field.secondInputTitle
+}) }}

@@ -8,7 +8,7 @@
         "cms",
         "craftcms",
         "craft-plugin",
-        "rider"
+        "Rider"
     ],
     "license": "MIT",
     "authors": [
@@ -23,7 +23,7 @@
     },
     "autoload": {
         "psr-4": {
-          "loveheenavasu\\rhlriderentry\\": "src/"
+          "loveheenavasu\\rhl-rider-entry\\": "src/"
         }
     }
 }
