@@ -1,0 +1,29 @@
+{
+    "name": "loveheenavasu/rhl-rider-entry",
+    "description": "RHL Rider Entry",
+    "type": "craft-plugin",
+    "version": "1.1.0",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "rider"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Love Trivedi",
+            "homepage": "https://www.lovetrivedi.com/"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^3.0.0",
+        "barrelstrength/sprout-forms": "^3.12.0"
+    },
+    "autoload": {
+        "psr-4": {
+          "loveheenavasu\\rhlriderentry\\": "src/"
+        }
+    }
+}
